@@ -1,0 +1,46 @@
+
+
+Why spark using partitions ?
+
+# Parallelism
+
+    -> Partitions allow Spark to distribute data across multiple nodes in a cluster, enabling parallel processing
+
+# Scalability
+
+    -> Partitions allow Spark to scale out to handle larger datasets
+
+# Fault Tolerance
+
+    -> Partitions allow Spark to recover from failures by re-computing the lost partition
+
+    RDD -> Resilient Distributed Dataset
+
+
+------------------------------------------------------------------
+
+Why we need to do re-partiotioning ?
+
+1. imptoving re-partitioning
+2. reduce data skew
+3. Optimizing resource utilization
+
+How?
+
+.repartition()  
+
+    - increase or decrease the number of partitions
+    - it shuffles the data across the cluster, costly in terms of performance
+      but is necessary when the data is skewed or when the number of partitions is not optimal
+
+.coalesce()
+
+    - decrease the number of partitions
+    - it does not shuffle the data across the cluster, it only combines partitions
+    - it is less costly in terms of performance than repartitioning
+
+------------------------------------------------------------------
+
+Choosing when and how to repartition requires understanding both the current partitioning of the dataset and the computational characteristics of the operations being performed. By carefully managing partitioning, Spark developers can significantly improve the performance and efficiency of their applications
+
+------------------------------------------------------------------
