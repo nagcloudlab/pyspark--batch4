@@ -1,103 +1,58 @@
-from pyspark.sql import *
-from pyspark.sql.functions import *
-from pyspark.sql.types import StructType, StructField, StringType, LongType, IntegerType, DoubleType, ArrayType
+
+
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as f
+
+#--------------------------------------------------------------
+# Example 16:  Working with Joins
+#--------------------------------------------------------------
 
 
 spark = SparkSession \
     .builder \
-    .appName("File Streaming Demo") \
-    .master("local[3]") \
-    .config("spark.streaming.stopGracefullyOnShutdown", "true") \
-    .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
+    .appName("Spark Join Demo") \
     .getOrCreate()
 
-# -------------------------------------------------------------------------------------
 
+orders_list = [("01", "02", 350, 1),
+                ("01", "04", 580, 1),
+                ("01", "07", 320, 2),
+                ("02", "03", 450, 1),
+                ("02", "06", 220, 1),
+                ("03", "01", 195, 1),
+                ("04", "09", 270, 3),
+                ("04", "08", 410, 2),
+                ("05", "02", 350, 1)]
+order_df = spark.createDataFrame(orders_list).toDF("order_id", "prod_id", "unit_price", "qty")
+product_list = [("01", "Scroll Mouse", 250, 20),
+                ("02", "Optical Mouse", 350, 20),
+                ("03", "Wireless Mouse", 450, 50),
+                ("04", "Wireless Keyboard", 580, 50),
+                ("05", "Standard Keyboard", 360, 10),
+                ("06", "16 GB Flash Storage", 240, 100),
+                ("07", "32 GB Flash Storage", 320, 50),
+                ("08", "64 GB Flash Storage", 430, 25)]
+product_df = spark.createDataFrame(product_list).toDF("prod_id", "prod_name", "list_price", "qty")
 
+order_df.show()
+product_df.show()
 
-# READ
-kafka_df=spark.readStream \
-.format("kafka") \
-.option("kafka.bootstrap.servers", "localhost:9092") \
-.option("subscribe", "invoices") \
-.option("startingOffsets", "earliest") \
-.load() 
+# Inner Join
+join_expr = order_df["prod_id"] == product_df["prod_id"]
 
-kafka_df.printSchema()
+product_renamed_df = product_df.withColumnRenamed("qty", "reorder_qty")
+sales_report_df = order_df.join(product_renamed_df, join_expr,"left") \
+.drop(product_renamed_df.prod_id) \
+.select("order_id", "prod_id", "prod_name", "unit_price", "list_price", "qty")  \
+.withColumn("prod_name",f.expr("coalesce(prod_name, 'NA')")) \
+.withColumn("list_price",f.expr("coalesce(list_price, 0)")) \
+.sort("order_id")
+    
+sales_report_df \
+.show()
 
-# TRANSFORM
+input("Press Enter to continue...")
 
-schema = StructType([
-    StructField("InvoiceNumber", StringType()),
-    StructField("CreatedTime", LongType()),
-    StructField("StoreID", StringType()),
-    StructField("PosID", StringType()),
-    StructField("CashierID", StringType()),
-    StructField("CustomerType", StringType()),
-    StructField("CustomerCardNo", StringType()),
-    StructField("TotalAmount", DoubleType()),
-    StructField("NumberOfItems", IntegerType()),
-    StructField("PaymentMethod", StringType()),
-    StructField("CGST", DoubleType()),
-    StructField("SGST", DoubleType()),
-    StructField("CESS", DoubleType()),
-    StructField("DeliveryType", StringType()),
-    StructField("DeliveryAddress", StructType([
-        StructField("AddressLine", StringType()),
-        StructField("City", StringType()),
-        StructField("State", StringType()),
-        StructField("PinCode", StringType()),
-        StructField("ContactNumber", StringType())
-    ])),
-    StructField("InvoiceLineItems", ArrayType(StructType([
-        StructField("ItemCode", StringType()),
-        StructField("ItemDescription", StringType()),
-        StructField("ItemPrice", DoubleType()),
-        StructField("ItemQty", IntegerType()),
-        StructField("TotalValue", DoubleType())
-    ]))),
-])
-
-value_df = kafka_df.select(from_json(col("value").cast("string"), schema).alias("value"))
-
-# value_df.printSchema()
-
-# value_df.printSchema()
-notification_df = value_df \
-    .where("value.CustomerType == 'PRIME'") \
-    .select("value.InvoiceNumber", "value.CustomerCardNo", "value.TotalAmount") \
-    .withColumn("EarnedLoyaltyPoints", expr("TotalAmount * 0.2"))
-
-# notification_df.printSchema()
-
-
-
-# # Write -> console
-# notification_df.writeStream \
-#     .outputMode("append") \
-#     .format("console") \
-#     .start() \
-#     .awaitTermination()
-
-
-# Write -> Kafka
-kafka_target_df = notification_df.selectExpr("InvoiceNumber as key",
-                                                 """to_json(named_struct(
-                                                'CustomerCardNo', CustomerCardNo,
-                                                'TotalAmount', TotalAmount,
-                                                'EarnedLoyaltyPoints', TotalAmount * 0.2)) as value""")
-
-# WRITE
-notification_writer_query = kafka_target_df \
-    .writeStream \
-    .queryName("Notification Writer") \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", "localhost:9092") \
-    .option("topic", "notifications") \
-    .outputMode("append") \
-    .option("checkpointLocation", "chk-point-dir") \
-    .start() \
-
-notification_writer_query.awaitTermination()
-
-# -------------------------------------------------------------------------------------
+spark.stop()

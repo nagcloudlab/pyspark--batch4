@@ -10,6 +10,7 @@ spark = SparkSession \
     .builder \
     .appName("Watermark Demo") \
     .master("local[3]") \
+    .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .config("spark.streaming.stopGracefullyOnShutdown", "true") \
     .config("spark.sql.shuffle.partitions", 2) \
     .getOrCreate()

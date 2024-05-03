@@ -58,6 +58,7 @@ schema = StructType([
 ])
 value_df = kafka_df.select(from_json(col("value").cast("string"), schema).alias("value"))
 # value_df.printSchema()
+
 notification_df = value_df \
     .where("value.CustomerType == 'PRIME'") \
     .select("value.InvoiceNumber", "value.CustomerCardNo", "value.TotalAmount") \

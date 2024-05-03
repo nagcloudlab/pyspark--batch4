@@ -12,6 +12,7 @@ if __name__ == "__main__":
         .appName("Tumbling Window Demo") \
         .master("local[3]") \
         .config("spark.streaming.stopGracefullyOnShutdown", "true") \
+        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
         .config("spark.sql.shuffle.partitions", 2) \
         .getOrCreate()
 
@@ -45,17 +46,7 @@ if __name__ == "__main__":
 
     output_df = window_agg_df.select("window.start", "window.end", "TotalBuy", "TotalSell")
 
-    '''
-    running_total_window = Window.orderBy("end") \
-        .rowsBetween(Window.unboundedPreceding, Window.currentRow)
-
-    final_output_df = output_df \
-        .withColumn("RTotalBuy", sum("TotalBuy").over(running_total_window)) \
-        .withColumn("RTotalSell", sum("TotalSell").over(running_total_window)) \
-        .withColumn("NetValue", expr("RTotalBuy - RTotalSell"))
-
-    final_output_df.show(truncate=False)
-    '''
+  
     window_query = output_df.writeStream \
         .format("console") \
         .outputMode("update") \

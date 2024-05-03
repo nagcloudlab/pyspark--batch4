@@ -18,7 +18,7 @@ INSERT INTO users (Login_id, user_name, last_login) VALUES( '100001', 'Prashant'
 INSERT INTO users (Login_id, user_name, last_login) VALUES( '100009', 'Alisha', '2019-03-07 11:03:00');
 INSERT INTO users (Login_id, user_name, last_login) VALUES( '100087', 'Abdul', '2019-06-12 09:43:00');
 
-INSERT INTO users (Login_id, user_name, last_login) VALUES( '100091', 'New User', '2019-06-12 09:43:00');
+INSERT INTO users (Login_id, user_name, last_login) VALUES( '100091', 'Nag', '2019-06-12 09:43:00');
 
 
 
@@ -30,7 +30,7 @@ kafka
 {"login_id": "100001", "created_time": "2020-09-09 10:18:00"}
 {"login_id": "100009", "created_time": "2020-09-18 07:15:00"}
 {"login_id": "100087", "created_time": "2020-09-18 07:15:00"}
-{"login_id": "100091", "created_time": "2020-09-18 07:15:00"}
+{"login_id": "100091", "created_time": "2024-05-03 11:44:00"}
 
 -----------------
 

@@ -21,7 +21,7 @@ public class InvoiceProducer {
     public static void main(String[] args) {
 
         String topicName = "invoices";
-        int noOfProducers = 100;
+        int noOfProducers = 1;
         int produceSpeed = 1000;
 
         Properties properties = new Properties();
@@ -30,7 +30,7 @@ public class InvoiceProducer {
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        KafkaProducer<String, PosInvoice> kafkaProducer = new KafkaProducer<>(properties);
+        KafkaProducer<String, PosInvoice> kafkaProducerz = new KafkaProducer<>(properties);
         ExecutorService executor = Executors.newFixedThreadPool(noOfProducers);
         final List<RunnableProducer> runnableProducers = new ArrayList<>();
 

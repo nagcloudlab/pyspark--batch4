@@ -4,7 +4,8 @@ Why spark using partitions ?
 
 # Parallelism
 
-    -> Partitions allow Spark to distribute data across multiple nodes in a cluster, enabling parallel processing
+    -> Partitions allow Spark to distribute data across multiple nodes in a cluster, 
+       enabling parallel processing
 
 # Scalability
 
@@ -19,9 +20,8 @@ Why spark using partitions ?
 
 ------------------------------------------------------------------
 
-Why we need to do re-partiotioning ?
+Why we need to do re-partitioning ?
 
-1. imptoving re-partitioning
 2. reduce data skew
 3. Optimizing resource utilization
 
@@ -41,6 +41,11 @@ How?
 
 ------------------------------------------------------------------
 
-Choosing when and how to repartition requires understanding both the current partitioning of the dataset and the computational characteristics of the operations being performed. By carefully managing partitioning, Spark developers can significantly improve the performance and efficiency of their applications
+Choosing when and how to repartition requires understanding 
+both the current partitioning of the dataset and the computational characteristics 
+of the operations being performed. 
+
+By carefully managing partitioning, 
+Spark developers can significantly improve the performance and efficiency of their applications
 
 ------------------------------------------------------------------

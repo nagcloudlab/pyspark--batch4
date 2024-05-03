@@ -13,10 +13,12 @@ def write_to_cassandra(target_df, batch_id):
 
 
 if __name__ == "__main__":
+
     spark = SparkSession \
         .builder \
         .master("local[3]") \
         .appName("Stream Table Join Demo") \
+        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,com.datastax.spark:spark-cassandra-connector_2.12:3.5.0") \
         .config("spark.streaming.stopGracefullyOnShutdown", "true") \
         .config("spark.sql.shuffle.partitions", 2) \
         .config("spark.cassandra.connection.host", "localhost") \
