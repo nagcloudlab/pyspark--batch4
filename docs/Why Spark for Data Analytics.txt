@@ -1,6 +1,7 @@
 Why Spark for Data Analytics?
 
-Spark is a powerful analytics engine that can be used for large-scale data processing. 
+Spark is a powerful analytics engine that can be used for large-scale data processing.
+
 The most important reasons for using Spark are:
 
 
@@ -20,4 +21,5 @@ The most important reasons for using Spark are:
 
 
 
-Spark is fast. Spark is up to 100 times faster than Hadoop MapReduce for large-scale data processing.
+Spark is fast. 
+Spark is up to 100 times faster than Hadoop MapReduce for large-scale data processing.
